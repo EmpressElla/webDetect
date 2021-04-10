@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="description"
+      content="official website of the DAMS concept by Concept-X"
+    />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://use.fontawesome.com/3ee414af31.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.2.0/p5.min.js"></script>
+    <!-- ml5 -->
+    <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+    <title>DAMS concept</title>
+  </head>
+  <body>
+    <main class="main">
+      <h1 class="title">DAMS audio</h1>
+      <button id="recButton" class="rec_button">
+        <i class="fa fa-microphone microphone"></i>
+      </button>
+    </main>
+    <script>
+      let audio;
+      let classifier;
+      let label = "waiting....";
+      var latitude = 0.0;
+      var longitude = 0.0;
+
+      const xhttp = new XMLHttpRequest();
+
+      function preload() {
+        classifier = ml5.soundClassifier(
+          "https://teachablemachine.withgoogle.com/models/QB0Jaikux/model.json"
+        );
+      }
+      function setup() {
+        classifyAudio();
+      }
+
+      function classifyAudio() {
+        classifier.classify(gotResults);
+      }
+
+      function gotResults(error, results) {
+        if (error) {
+          console.log(error);
+          return;
+        }
+
+        label = results[0].label;
+        confidence = results[0].confidence;
+
+        function getLocation() {
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+              longitude = position.coords.longitude;
+              latitude = position.coords.latitude;
+            });
+          }
+        }
+        getLocation();
+
+        if (label === "chainsaw" && confidence >= 0.8) {
+          var send = { longitude: longitude, latitude: latitude };
+          // var sendy = { Name: "John", age: 10 };
+          var sendString = JSON.stringify(send);
+          alert(sendString);
+          xhttp.open("POST", "localhost:5000/locate");
+          xhttp.setRequestHeader("Content-Type", "application/json");
+          xhttp.send(sendString);
+          console.log(label, confidence);
+        } else if (label === "Noise" && confidence >= 0.8) {
+          console.log(label, confidence);
+        }
+      }
+    </script>
+  </body>
+</html>

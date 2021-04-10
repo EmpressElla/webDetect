@@ -1,0 +1,28 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: rgb(255,255,255);
+}
+
+.main {
+  display: grid;
+  place-items: center;
+  height: 100vh;
+}
+
+button {
+  border: none;
+  background: transparent;
+}
+
+button > .microphone {
+  background: none !important;
+  color: black;
+  min-width: 200px;
+  min-height: 300px;
+  font-size: 25rem;
+}
